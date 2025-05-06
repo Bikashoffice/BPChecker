@@ -6,6 +6,9 @@ import { HealthInsights } from "@/components/HealthInsights";
 import { ReadingsTable } from "@/components/ReadingsTable";
 import { TrendsChart } from "@/components/TrendsChart";
 import { BPProvider } from "@/context/BPContext";
+import { Button } from "@/components/ui/button";
+import { InfoIcon } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Index = () => {
   return (
@@ -16,6 +19,14 @@ const Index = () => {
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             <div>
               <BPEntryForm />
+              <div className="mt-4">
+                <Button variant="outline" asChild className="w-full">
+                  <Link to="/bp-info" className="flex items-center justify-center gap-2">
+                    <InfoIcon className="h-4 w-4" />
+                    <span>Learn About Blood Pressure Ranges</span>
+                  </Link>
+                </Button>
+              </div>
             </div>
             <div>
               <BPSummary />

@@ -48,11 +48,12 @@ export function ReadingsTable() {
             <p className="text-muted-foreground">No readings recorded yet</p>
           </div>
         ) : (
-          <div className="rounded-md border">
+          <div className="rounded-md border overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Date & Time</TableHead>
+                  <TableHead>Name</TableHead>
                   <TableHead className="text-center">Systolic</TableHead>
                   <TableHead className="text-center">Diastolic</TableHead>
                   <TableHead className="text-center">Pulse</TableHead>
@@ -65,6 +66,7 @@ export function ReadingsTable() {
                 {readings.map((reading) => (
                   <TableRow key={reading.id}>
                     <TableCell>{formatDate(reading.date)}</TableCell>
+                    <TableCell>{reading.name || 'Anonymous'}</TableCell>
                     <TableCell className="text-center font-medium text-health-high">
                       {reading.systolic}
                     </TableCell>

@@ -1,5 +1,7 @@
 
-import { ThermometerIcon } from "lucide-react";
+import { ThermometerIcon, InfoIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 export function Header() {
   return (
@@ -9,12 +11,23 @@ export function Header() {
           <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
             <ThermometerIcon className="h-6 w-6 text-primary" />
           </div>
-          <h1 className="text-xl font-semibold bg-gradient-to-r from-primary to-theme-purple-dark bg-clip-text text-transparent">
-            Pulse Pathway Pal
-          </h1>
+          <Link to="/">
+            <h1 className="text-xl font-semibold bg-gradient-to-r from-primary to-theme-purple-dark bg-clip-text text-transparent">
+              Pulse Pathway Pal
+            </h1>
+          </Link>
         </div>
-        <div className="text-sm text-muted-foreground">
-          Your health companion
+        
+        <div className="flex items-center gap-3">
+          <div className="text-sm text-muted-foreground hidden sm:block">
+            Your health companion
+          </div>
+          <Button variant="outline" size="sm" asChild>
+            <Link to="/bp-info" className="flex items-center gap-1">
+              <InfoIcon className="h-4 w-4" />
+              <span>BP Info</span>
+            </Link>
+          </Button>
         </div>
       </div>
     </header>

@@ -9,6 +9,7 @@ export interface BPReading {
   pulse: number;
   date: Date;
   notes: string;
+  name: string; // Adding name field to track user identity
 }
 
 interface BPContextType {
@@ -36,7 +37,8 @@ export const BPProvider = ({ children }: { children: ReactNode }) => {
       if (savedReadings) {
         return JSON.parse(savedReadings).map((reading: any) => ({
           ...reading,
-          date: new Date(reading.date)
+          date: new Date(reading.date),
+          name: reading.name || 'Anonymous' // Ensure existing readings have a name
         }));
       }
       return [];
@@ -68,7 +70,11 @@ export const BPProvider = ({ children }: { children: ReactNode }) => {
     toast("Reading deleted");
   };
 
-  const getHealthStatus = (systolic: number, diastolic: number) => {
+  const getHealthStatus = (systolic: number, diastolic: number): {
+    status: 'normal' | 'elevated' | 'high' | 'low';
+    color: string;
+    message: string;
+  } => {
     // Low blood pressure
     if (systolic < 90 || diastolic < 60) {
       return {
@@ -103,7 +109,11 @@ export const BPProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const getPulseStatus = (pulse: number) => {
+  const getPulseStatus = (pulse: number): {
+    status: 'normal' | 'high' | 'low';
+    color: string;
+    message: string;
+  } => {
     // Low pulse rate
     if (pulse < 60) {
       return {

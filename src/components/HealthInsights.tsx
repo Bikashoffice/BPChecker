@@ -35,13 +35,24 @@ export function HealthInsights() {
   const pulseStatus = getPulseStatus(lastReading.pulse);
   
   const getTips = () => {
+    const isElderlyUser = lastReading.age && lastReading.age > 65;
+    const isFemaleUser = lastReading.gender === "female";
+    const isMaleUser = lastReading.gender === "male";
+    const isYoungUser = lastReading.age && lastReading.age < 30;
+    
     if (bpStatus.status === 'normal' && pulseStatus.status === 'normal') {
-      return [
+      const tips = [
         "Keep maintaining a balanced diet with plenty of fruits and vegetables",
         "Continue your regular physical activity of at least 30 minutes daily",
         "Maintain healthy sleep habits with 7-9 hours of restful sleep",
         "Practice stress management techniques like meditation"
       ];
+      
+      if (isElderlyUser) {
+        tips.push("Annual health checkups are especially important at your age");
+      }
+      
+      return tips;
     }
     
     let tips = [];
@@ -54,6 +65,14 @@ export function HealthInsights() {
         "Stand up slowly to avoid dizziness",
         "Consider adding more salt to your diet (consult doctor first)"
       ];
+      
+      if (isFemaleUser) {
+        tips.push("Low blood pressure can sometimes be related to hormonal changes - consider discussing with your doctor");
+      }
+      
+      if (isElderlyUser) {
+        tips.push("At your age, low blood pressure requires careful monitoring - consult your doctor");
+      }
     }
     else if (bpStatus.status === 'elevated' || bpStatus.status === 'high') {
       tips = [
@@ -63,22 +82,50 @@ export function HealthInsights() {
         "Limit alcohol consumption and avoid smoking",
         "Practice stress reduction techniques"
       ];
+      
+      if (isMaleUser && !isYoungUser) {
+        tips.push("Men over 30 have a higher risk of hypertension - consider more frequent monitoring");
+      }
+      
+      if (isElderlyUser) {
+        tips.push("Consider speaking with your doctor about medication options suitable for elderly patients");
+      }
     }
     
     if (pulseStatus.status === 'low') {
       tips.push("Monitor for symptoms like fatigue or dizziness");
       tips.push("Discuss with your doctor if you're on heart medications");
+      
+      if (isElderlyUser) {
+        tips.push("Low pulse in elderly people may require special attention - consult your doctor");
+      }
     }
     else if (pulseStatus.status === 'high') {
       tips.push("Reduce caffeine and stimulant intake");
       tips.push("Practice deep breathing exercises");
       tips.push("Ensure you're staying hydrated");
+      
+      if (isYoungUser) {
+        tips.push("For young adults, elevated heart rate may be related to stress or anxiety - consider relaxation techniques");
+      }
     }
     
     return tips;
   };
   
   const tips = getTips();
+
+  // Create user information display
+  const getUserDescription = () => {
+    let description = `For ${lastReading.name || 'Anonymous'}`;
+    if (lastReading.age) {
+      description += `, ${lastReading.age} years old`;
+    }
+    if (lastReading.gender) {
+      description += `, ${lastReading.gender}`;
+    }
+    return description;
+  };
 
   return (
     <Card className="bp-card h-full">
@@ -87,7 +134,7 @@ export function HealthInsights() {
           <InfoIcon className="h-5 w-5 text-primary" />
           Health Insights
         </CardTitle>
-        <CardDescription>Based on your recent measurements</CardDescription>
+        <CardDescription>{getUserDescription()}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div>

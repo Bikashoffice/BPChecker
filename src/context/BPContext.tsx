@@ -10,6 +10,8 @@ export interface BPReading {
   date: Date;
   notes: string;
   name: string; // Adding name field to track user identity
+  age?: number; // Adding optional age field
+  gender?: string; // Adding optional gender field
 }
 
 interface BPContextType {
@@ -38,7 +40,9 @@ export const BPProvider = ({ children }: { children: ReactNode }) => {
         return JSON.parse(savedReadings).map((reading: any) => ({
           ...reading,
           date: new Date(reading.date),
-          name: reading.name || 'Anonymous' // Ensure existing readings have a name
+          name: reading.name || 'Anonymous', // Ensure existing readings have a name
+          age: reading.age || undefined, // Handle optional fields
+          gender: reading.gender || undefined
         }));
       }
       return [];

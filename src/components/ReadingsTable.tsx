@@ -33,6 +33,28 @@ export function ReadingsTable() {
       </span>
     );
   };
+
+  // Create a function to display user info including age and gender
+  const getUserInfo = (reading: BPReading) => {
+    let info = reading.name || 'Anonymous';
+    
+    // Add age if available
+    if (reading.age) {
+      info += ` (${reading.age}`;
+      
+      // Add gender if available
+      if (reading.gender) {
+        info += `, ${reading.gender}`;
+      }
+      
+      info += ')';
+    } else if (reading.gender) {
+      // Only add gender in parentheses if no age is available
+      info += ` (${reading.gender})`;
+    }
+    
+    return info;
+  };
   
   return (
     <Card className="bp-card">
@@ -53,7 +75,7 @@ export function ReadingsTable() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Date & Time</TableHead>
-                  <TableHead>Name</TableHead>
+                  <TableHead>User</TableHead>
                   <TableHead className="text-center">Systolic</TableHead>
                   <TableHead className="text-center">Diastolic</TableHead>
                   <TableHead className="text-center">Pulse</TableHead>
@@ -66,7 +88,7 @@ export function ReadingsTable() {
                 {readings.map((reading) => (
                   <TableRow key={reading.id}>
                     <TableCell>{formatDate(reading.date)}</TableCell>
-                    <TableCell>{reading.name || 'Anonymous'}</TableCell>
+                    <TableCell>{getUserInfo(reading)}</TableCell>
                     <TableCell className="text-center font-medium text-health-high">
                       {reading.systolic}
                     </TableCell>

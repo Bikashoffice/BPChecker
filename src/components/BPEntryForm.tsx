@@ -1,12 +1,27 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useBP } from "@/context/BPContext";
-import { InfoIcon } from "lucide-react";
+import { InfoIcon, UserIcon } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { 
+  Command,
+  CommandEmpty, 
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 export function BPEntryForm() {
   const [systolic, setSystolic] = useState("");
@@ -14,7 +29,30 @@ export function BPEntryForm() {
   const [pulse, setPulse] = useState("");
   const [notes, setNotes] = useState("");
   const [name, setName] = useState("");
-  const { addReading } = useBP();
+  const [age, setAge] = useState("");
+  const [gender, setGender] = useState("");
+  const [isOpenUserDropdown, setIsOpenUserDropdown] = useState(false);
+  const { addReading, readings } = useBP();
+  const [existingUsers, setExistingUsers] = useState<{name: string, age: string, gender: string}[]>([]);
+
+  // Extract unique users from readings
+  useEffect(() => {
+    const uniqueUsers = Array.from(
+      new Map(
+        readings
+          .filter(reading => reading.name !== "Anonymous")
+          .map(reading => [
+            reading.name, 
+            { 
+              name: reading.name,
+              age: reading.age || "",
+              gender: reading.gender || ""
+            }
+          ])
+      ).values()
+    );
+    setExistingUsers(uniqueUsers);
+  }, [readings]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,6 +60,7 @@ export function BPEntryForm() {
     const systolicNum = parseInt(systolic);
     const diastolicNum = parseInt(diastolic);
     const pulseNum = parseInt(pulse);
+    const ageNum = age ? parseInt(age) : 0;
     
     if (isNaN(systolicNum) || isNaN(diastolicNum) || isNaN(pulseNum)) {
       return;
@@ -33,7 +72,9 @@ export function BPEntryForm() {
       pulse: pulseNum,
       date: new Date(),
       notes,
-      name: name || "Anonymous" // Add the name field with a default value if not provided
+      name: name || "Anonymous", 
+      age: ageNum,
+      gender
     });
     
     // Reset form
@@ -42,6 +83,13 @@ export function BPEntryForm() {
     setPulse("");
     setNotes("");
     // Keep the name as is for convenience in entering multiple readings
+  };
+
+  const handleSelectUser = (selectedUser: {name: string, age: string, gender: string}) => {
+    setName(selectedUser.name);
+    setAge(selectedUser.age);
+    setGender(selectedUser.gender);
+    setIsOpenUserDropdown(false);
   };
 
   return (
@@ -71,13 +119,74 @@ export function BPEntryForm() {
         <form onSubmit={handleSubmit} id="bp-form">
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="name">User</Label>
+                {existingUsers.length > 0 && (
+                  <Popover open={isOpenUserDropdown} onOpenChange={setIsOpenUserDropdown}>
+                    <PopoverTrigger asChild>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="h-8 gap-1 text-xs"
+                      >
+                        <UserIcon className="h-3.5 w-3.5" />
+                        Select Existing
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="p-0" align="end">
+                      <Command>
+                        <CommandInput placeholder="Search users..." />
+                        <CommandList>
+                          <CommandEmpty>No users found</CommandEmpty>
+                          <CommandGroup>
+                            {existingUsers.map((user) => (
+                              <CommandItem 
+                                key={user.name}
+                                onSelect={() => handleSelectUser(user)}
+                                className="cursor-pointer"
+                              >
+                                {user.name} {user.age ? `(${user.age}${user.gender ? ', ' + user.gender : ''})` : ''}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                )}
+              </div>
               <Input
                 id="name"
                 placeholder="Your name (or leave empty for Anonymous)"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="age">Age</Label>
+                <Input
+                  id="age"
+                  type="number"
+                  placeholder="Years"
+                  value={age}
+                  onChange={(e) => setAge(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="gender">Gender</Label>
+                <Select value={gender} onValueChange={setGender}>
+                  <SelectTrigger id="gender">
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="male">Male</SelectItem>
+                    <SelectItem value="female">Female</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             
             <div className="grid grid-cols-3 gap-4">

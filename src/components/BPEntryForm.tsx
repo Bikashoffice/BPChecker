@@ -45,7 +45,7 @@ export function BPEntryForm() {
             reading.name, 
             { 
               name: reading.name,
-              age: reading.age || "",
+              age: reading.age ? String(reading.age) : "", // Convert age to string explicitly
               gender: reading.gender || ""
             }
           ])

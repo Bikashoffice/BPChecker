@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,6 +13,7 @@ export function BPEntryForm() {
   const [diastolic, setDiastolic] = useState("");
   const [pulse, setPulse] = useState("");
   const [notes, setNotes] = useState("");
+  const [name, setName] = useState("");
   const { addReading } = useBP();
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -32,7 +32,8 @@ export function BPEntryForm() {
       diastolic: diastolicNum,
       pulse: pulseNum,
       date: new Date(),
-      notes
+      notes,
+      name: name || "Anonymous" // Add the name field with a default value if not provided
     });
     
     // Reset form
@@ -40,6 +41,7 @@ export function BPEntryForm() {
     setDiastolic("");
     setPulse("");
     setNotes("");
+    // Keep the name as is for convenience in entering multiple readings
   };
 
   return (
@@ -67,39 +69,51 @@ export function BPEntryForm() {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} id="bp-form">
-          <div className="grid grid-cols-3 gap-4">
+          <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="systolic">Systolic</Label>
+              <Label htmlFor="name">Name</Label>
               <Input
-                id="systolic"
-                type="number"
-                placeholder="120"
-                value={systolic}
-                onChange={(e) => setSystolic(e.target.value)}
-                required
+                id="name"
+                placeholder="Your name (or leave empty for Anonymous)"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="diastolic">Diastolic</Label>
-              <Input
-                id="diastolic"
-                type="number"
-                placeholder="80"
-                value={diastolic}
-                onChange={(e) => setDiastolic(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="pulse">Pulse</Label>
-              <Input
-                id="pulse"
-                type="number"
-                placeholder="75"
-                value={pulse}
-                onChange={(e) => setPulse(e.target.value)}
-                required
-              />
+            
+            <div className="grid grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="systolic">Systolic</Label>
+                <Input
+                  id="systolic"
+                  type="number"
+                  placeholder="120"
+                  value={systolic}
+                  onChange={(e) => setSystolic(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="diastolic">Diastolic</Label>
+                <Input
+                  id="diastolic"
+                  type="number"
+                  placeholder="80"
+                  value={diastolic}
+                  onChange={(e) => setDiastolic(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="pulse">Pulse</Label>
+                <Input
+                  id="pulse"
+                  type="number"
+                  placeholder="75"
+                  value={pulse}
+                  onChange={(e) => setPulse(e.target.value)}
+                  required
+                />
+              </div>
             </div>
           </div>
           <div className="mt-4 space-y-2">

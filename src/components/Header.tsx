@@ -13,7 +13,7 @@ export function Header() {
           </div>
           <Link to="/">
             <h1 className="text-xl font-semibold bg-gradient-to-r from-primary to-theme-purple-dark bg-clip-text text-transparent">
-              Pulse Pathway Pal
+              BP Checker (by Nischit)
             </h1>
           </Link>
         </div>

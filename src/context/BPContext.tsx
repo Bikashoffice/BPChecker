@@ -3,6 +3,7 @@ import React, { createContext, useState, useContext, ReactNode, useEffect } from
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { v4 as uuidv4 } from 'uuid';
+import { useAuth } from '@/context/AuthContext';
 
 export interface BPReading {
   id: string;
@@ -38,6 +39,7 @@ interface BPContextType {
 const BPContext = createContext<BPContextType | undefined>(undefined);
 
 export const BPProvider = ({ children }: { children: ReactNode }) => {
+  const { user } = useAuth();
   const [readings, setReadings] = useState<BPReading[]>(() => {
     try {
       const savedReadings = localStorage.getItem('bp-readings');
@@ -67,6 +69,12 @@ export const BPProvider = ({ children }: { children: ReactNode }) => {
   // Fetch shared readings from Supabase
   useEffect(() => {
     async function fetchSharedReadings() {
+      if (!user) {
+        setSharedReadings([]);
+        setIsLoading(false);
+        return;
+      }
+      
       setIsLoading(true);
       try {
         const { data, error } = await supabase
@@ -128,14 +136,15 @@ export const BPProvider = ({ children }: { children: ReactNode }) => {
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [user]);
 
   const addReading = async (reading: Omit<BPReading, 'id'>) => {
     const status = getHealthStatus(reading.systolic, reading.diastolic);
     const newReading = {
       ...reading,
       id: uuidv4(),
-      status: status.status
+      status: status.status,
+      name: user?.email || reading.name || 'Anonymous', // Use user email if authenticated
     };
     
     // Add to local state
@@ -151,7 +160,7 @@ export const BPProvider = ({ children }: { children: ReactNode }) => {
           pulse: reading.pulse,
           date: reading.date.toISOString(),
           notes: reading.notes,
-          name: reading.name || 'Anonymous',
+          name: user?.email || reading.name || 'Anonymous',
           age: reading.age,
           gender: reading.gender,
           status: status.status

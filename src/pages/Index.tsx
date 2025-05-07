@@ -5,9 +5,10 @@ import { BPSummary } from "@/components/BPSummary";
 import { HealthInsights } from "@/components/HealthInsights";
 import { ReadingsTable } from "@/components/ReadingsTable";
 import { TrendsChart } from "@/components/TrendsChart";
+import { SharedReadings } from "@/components/SharedReadings";
 import { BPProvider } from "@/context/BPContext";
 import { Button } from "@/components/ui/button";
-import { InfoIcon } from "lucide-react";
+import { InfoIcon, UsersIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Index = () => {
@@ -36,11 +37,11 @@ const Index = () => {
             </div>
           </div>
           
-          <div className="mt-6">
+          <div className="mt-6 space-y-6">
+            <SharedReadings />
+            
             <TrendsChart />
-          </div>
-          
-          <div className="mt-6">
+            
             <ReadingsTable />
           </div>
         </main>

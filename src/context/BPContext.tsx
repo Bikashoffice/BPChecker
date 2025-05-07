@@ -1,6 +1,8 @@
 
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { v4 as uuidv4 } from 'uuid';
 
 export interface BPReading {
   id: string;
@@ -9,13 +11,15 @@ export interface BPReading {
   pulse: number;
   date: Date;
   notes: string;
-  name: string; // Adding name field to track user identity
-  age?: number; // Adding optional age field
-  gender?: string; // Adding optional gender field
+  name: string;
+  age?: number;
+  gender?: string;
+  status?: string;
 }
 
 interface BPContextType {
   readings: BPReading[];
+  sharedReadings: BPReading[];
   addReading: (reading: Omit<BPReading, 'id'>) => void;
   deleteReading: (id: string) => void;
   getHealthStatus: (systolic: number, diastolic: number) => {
@@ -28,6 +32,7 @@ interface BPContextType {
     color: string;
     message: string;
   };
+  isLoading: boolean;
 }
 
 const BPContext = createContext<BPContextType | undefined>(undefined);
@@ -40,8 +45,8 @@ export const BPProvider = ({ children }: { children: ReactNode }) => {
         return JSON.parse(savedReadings).map((reading: any) => ({
           ...reading,
           date: new Date(reading.date),
-          name: reading.name || 'Anonymous', // Ensure existing readings have a name
-          age: reading.age || undefined, // Handle optional fields
+          name: reading.name || 'Anonymous',
+          age: reading.age || undefined,
           gender: reading.gender || undefined
         }));
       }
@@ -51,22 +56,116 @@ export const BPProvider = ({ children }: { children: ReactNode }) => {
       return [];
     }
   });
+  
+  const [sharedReadings, setSharedReadings] = useState<BPReading[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     localStorage.setItem('bp-readings', JSON.stringify(readings));
   }, [readings]);
+  
+  // Fetch shared readings from Supabase
+  useEffect(() => {
+    async function fetchSharedReadings() {
+      setIsLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('shared_bp_readings')
+          .select('*')
+          .order('shared_at', { ascending: false });
+          
+        if (error) throw error;
+        
+        if (data) {
+          const formattedData = data.map(item => ({
+            id: item.id,
+            systolic: item.systolic,
+            diastolic: item.diastolic,
+            pulse: item.pulse,
+            date: new Date(item.date),
+            notes: item.notes || '',
+            name: item.name || 'Anonymous',
+            age: item.age,
+            gender: item.gender,
+            status: item.status
+          }));
+          setSharedReadings(formattedData);
+        }
+      } catch (error) {
+        console.error('Error fetching shared readings:', error);
+        toast.error('Failed to load shared readings');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    
+    fetchSharedReadings();
+    
+    // Set up real-time subscription to get updates
+    const subscription = supabase
+      .channel('shared_bp_readings_changes')
+      .on('postgres_changes', { 
+        event: 'INSERT', 
+        schema: 'public', 
+        table: 'shared_bp_readings' 
+      }, payload => {
+        const newReading = {
+          id: payload.new.id,
+          systolic: payload.new.systolic,
+          diastolic: payload.new.diastolic,
+          pulse: payload.new.pulse,
+          date: new Date(payload.new.date),
+          notes: payload.new.notes || '',
+          name: payload.new.name || 'Anonymous',
+          age: payload.new.age,
+          gender: payload.new.gender,
+          status: payload.new.status
+        };
+        setSharedReadings(prev => [newReading, ...prev]);
+      })
+      .subscribe();
+      
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
-  const addReading = (reading: Omit<BPReading, 'id'>) => {
+  const addReading = async (reading: Omit<BPReading, 'id'>) => {
+    const status = getHealthStatus(reading.systolic, reading.diastolic);
     const newReading = {
       ...reading,
-      id: crypto.randomUUID()
+      id: uuidv4(),
+      status: status.status
     };
+    
+    // Add to local state
     setReadings(prev => [newReading, ...prev]);
     
-    const status = getHealthStatus(reading.systolic, reading.diastolic);
-    toast(`Reading added: ${status.status.toUpperCase()}`, {
-      description: status.message,
-    });
+    // Save to Supabase
+    try {
+      const { error } = await supabase
+        .from('shared_bp_readings')
+        .insert({
+          systolic: reading.systolic,
+          diastolic: reading.diastolic,
+          pulse: reading.pulse,
+          date: reading.date.toISOString(),
+          notes: reading.notes,
+          name: reading.name || 'Anonymous',
+          age: reading.age,
+          gender: reading.gender,
+          status: status.status
+        });
+        
+      if (error) throw error;
+      
+      toast(`Reading added: ${status.status.toUpperCase()}`, {
+        description: status.message,
+      });
+    } catch (error) {
+      console.error('Error saving reading to Supabase:', error);
+      toast.error('Failed to share reading online');
+    }
   };
 
   const deleteReading = (id: string) => {
@@ -147,10 +246,12 @@ export const BPProvider = ({ children }: { children: ReactNode }) => {
   return (
     <BPContext.Provider value={{ 
       readings, 
+      sharedReadings,
       addReading, 
       deleteReading,
       getHealthStatus,
-      getPulseStatus
+      getPulseStatus,
+      isLoading
     }}>
       {children}
     </BPContext.Provider>

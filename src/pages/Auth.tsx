@@ -10,6 +10,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const authSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -117,7 +118,7 @@ const Auth = () => {
                 <Button 
                   variant="outline" 
                   size="sm"
-                  onClick={() => fillCredentials("admin@example.com", "admin")}
+                  onClick={() => fillCredentials("admin@example.com", "admin123")}
                   className="text-xs h-8"
                 >
                   Use Admin
@@ -125,7 +126,7 @@ const Auth = () => {
                 <Button 
                   variant="outline" 
                   size="sm"
-                  onClick={() => fillCredentials("nischit@example.com", "nischit")}
+                  onClick={() => fillCredentials("nischit@example.com", "nischit123")}
                   className="text-xs h-8"
                 >
                   Use Nischit

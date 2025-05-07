@@ -13,9 +13,9 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner position="top-right" richColors closeButton />
       <BrowserRouter>
+        <Toaster />
+        <Sonner position="top-right" richColors closeButton />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/bp-info" element={<BPInfo />} />

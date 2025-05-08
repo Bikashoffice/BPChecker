@@ -9,8 +9,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TableIcon } from "lucide-react";
+import { TableIcon, AlertCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export function SharedReadings() {
   const { sharedReadings, getHealthStatus, isLoading } = useBP();
@@ -75,6 +76,9 @@ export function SharedReadings() {
         ) : sharedReadings.length === 0 ? (
           <div className="text-center py-6">
             <p className="text-muted-foreground">No shared readings found</p>
+            <p className="text-sm text-muted-foreground mt-2">
+              Add a reading to see it here
+            </p>
           </div>
         ) : (
           <div className="rounded-md border overflow-x-auto">

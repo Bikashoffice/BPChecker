@@ -69,20 +69,18 @@ export const BPProvider = ({ children }: { children: ReactNode }) => {
   // Fetch shared readings from Supabase
   useEffect(() => {
     async function fetchSharedReadings() {
-      if (!user) {
-        setSharedReadings([]);
-        setIsLoading(false);
-        return;
-      }
-      
       setIsLoading(true);
       try {
+        // Even if user is not logged in, we can still fetch public shared readings
         const { data, error } = await supabase
           .from('shared_bp_readings')
           .select('*')
           .order('shared_at', { ascending: false });
           
-        if (error) throw error;
+        if (error) {
+          console.error('Supabase error:', error);
+          throw error;
+        }
         
         if (data) {
           const formattedData = data.map(item => ({
@@ -110,7 +108,7 @@ export const BPProvider = ({ children }: { children: ReactNode }) => {
     fetchSharedReadings();
     
     // Set up real-time subscription to get updates
-    const subscription = supabase
+    const channel = supabase
       .channel('shared_bp_readings_changes')
       .on('postgres_changes', { 
         event: 'INSERT', 
@@ -134,9 +132,9 @@ export const BPProvider = ({ children }: { children: ReactNode }) => {
       .subscribe();
       
     return () => {
-      subscription.unsubscribe();
+      supabase.removeChannel(channel);
     };
-  }, [user]);
+  }, []);
 
   const addReading = async (reading: Omit<BPReading, 'id'>) => {
     const status = getHealthStatus(reading.systolic, reading.diastolic);
@@ -150,8 +148,8 @@ export const BPProvider = ({ children }: { children: ReactNode }) => {
     // Add to local state
     setReadings(prev => [newReading, ...prev]);
     
-    // Save to Supabase
     try {
+      // Save to Supabase
       const { error } = await supabase
         .from('shared_bp_readings')
         .insert({
@@ -166,7 +164,10 @@ export const BPProvider = ({ children }: { children: ReactNode }) => {
           status: status.status
         });
         
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase insertion error:', error);
+        throw error;
+      }
       
       toast(`Reading added: ${status.status.toUpperCase()}`, {
         description: status.message,

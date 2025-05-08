@@ -61,32 +61,32 @@ const BPInfo = () => {
                     <TableRow>
                       <TableCell className="font-medium text-health-normal">Normal</TableCell>
                       <TableCell className="text-center">&lt; 120</TableCell>
-                      <TableCell className="text-center">&lt; 80</TableCell>
+                      <TableCell className="text-center">and &lt; 80</TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell className="font-medium text-health-elevated">Elevated/Prehypertension</TableCell>
-                      <TableCell className="text-center">120–139</TableCell>
-                      <TableCell className="text-center">80–89</TableCell>
+                      <TableCell className="font-medium text-health-elevated">Elevated</TableCell>
+                      <TableCell className="text-center">120-129</TableCell>
+                      <TableCell className="text-center">and &lt; 80</TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell className="font-medium text-health-high">Hypertension Stage 1</TableCell>
-                      <TableCell className="text-center">140–159</TableCell>
-                      <TableCell className="text-center">90–99</TableCell>
+                      <TableCell className="text-center">130-139</TableCell>
+                      <TableCell className="text-center">or 80-89</TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell className="font-medium text-health-high">Hypertension Stage 2</TableCell>
-                      <TableCell className="text-center">≥ 160</TableCell>
-                      <TableCell className="text-center">≥ 100</TableCell>
+                      <TableCell className="text-center">≥ 140</TableCell>
+                      <TableCell className="text-center">or ≥ 90</TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell className="font-medium text-destructive">Hypertensive Crisis</TableCell>
-                      <TableCell className="text-center">≥ 180</TableCell>
-                      <TableCell className="text-center">≥ 110</TableCell>
+                      <TableCell className="text-center">&gt; 180</TableCell>
+                      <TableCell className="text-center">and/or &gt; 120</TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell className="font-medium text-health-low">Low (Hypotension)</TableCell>
                       <TableCell className="text-center">&lt; 90</TableCell>
-                      <TableCell className="text-center">&lt; 60</TableCell>
+                      <TableCell className="text-center">or &lt; 60</TableCell>
                     </TableRow>
                   </TableBody>
                 </Table>
@@ -103,23 +103,23 @@ const BPInfo = () => {
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="w-24 font-medium">Elevated:</span> 
-                    <span>120-139/80-89 mmHg</span>
+                    <span>120-129/&lt;80 mmHg</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="w-24 font-medium">Stage 1:</span> 
-                    <span>140-159/90-99 mmHg</span>
+                    <span>130-139/80-89 mmHg</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="w-24 font-medium">Stage 2:</span> 
-                    <span>≥ 160/100 mmHg</span>
+                    <span>≥ 140/≥ 90 mmHg</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="w-24 font-medium text-destructive">Crisis:</span> 
-                    <span>≥ 180/110 mmHg</span>
+                    <span>&gt; 180/&gt; 120 mmHg</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="w-24 font-medium">Low:</span> 
-                    <span>&lt; 90/60 mmHg</span>
+                    <span>&lt; 90/&lt; 60 mmHg</span>
                   </li>
                 </ul>
               </div>

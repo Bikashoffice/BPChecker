@@ -74,7 +74,7 @@ export function HealthInsights() {
         tips.push("At your age, low blood pressure requires careful monitoring - consult your doctor");
       }
     }
-    else if (bpStatus.status === 'elevated' || bpStatus.status === 'high') {
+    else if (bpStatus.status === 'elevated') {
       tips = [
         "Reduce sodium intake to less than 1,500mg daily",
         "Increase physical activity to at least 150 minutes per week",
@@ -88,8 +88,35 @@ export function HealthInsights() {
       }
       
       if (isElderlyUser) {
+        tips.push("Consider speaking with your doctor about lifestyle changes suitable for your age");
+      }
+    }
+    else if (bpStatus.status === 'high') {
+      tips = [
+        "Reduce sodium intake to less than 1,500mg daily",
+        "Increase physical activity to at least 150 minutes per week",
+        "Adopt the DASH diet (rich in fruits, vegetables, whole grains)",
+        "Limit alcohol consumption and avoid smoking",
+        "Consult your doctor about medication options",
+        "Monitor your blood pressure regularly"
+      ];
+      
+      if (isMaleUser && !isYoungUser) {
+        tips.push("Men over 30 have a higher risk of serious hypertension - consult your doctor");
+      }
+      
+      if (isElderlyUser) {
         tips.push("Consider speaking with your doctor about medication options suitable for elderly patients");
       }
+    }
+    else if (bpStatus.status === 'crisis') {
+      return [
+        "Seek immediate medical attention if experiencing symptoms like severe headache, chest pain, vision problems, or difficulty breathing",
+        "Sit down and try to remain calm while waiting for help",
+        "Do not attempt to drive yourself to the hospital",
+        "If you have emergency blood pressure medication prescribed by your doctor, take it as directed",
+        "This is a medical emergency that requires immediate professional treatment"
+      ];
     }
     
     if (pulseStatus.status === 'low') {

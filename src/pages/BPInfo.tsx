@@ -64,24 +64,24 @@ const BPInfo = () => {
                       <TableCell className="text-center">&lt; 80</TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell className="font-medium text-health-elevated">Elevated</TableCell>
-                      <TableCell className="text-center">120–129</TableCell>
-                      <TableCell className="text-center">&lt; 80</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className="font-medium text-health-high">High (Stage 1)</TableCell>
-                      <TableCell className="text-center">130–139</TableCell>
+                      <TableCell className="font-medium text-health-elevated">Elevated/Prehypertension</TableCell>
+                      <TableCell className="text-center">120–139</TableCell>
                       <TableCell className="text-center">80–89</TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell className="font-medium text-health-high">High (Stage 2)</TableCell>
-                      <TableCell className="text-center">≥ 140</TableCell>
-                      <TableCell className="text-center">≥ 90</TableCell>
+                      <TableCell className="font-medium text-health-high">Hypertension Stage 1</TableCell>
+                      <TableCell className="text-center">140–159</TableCell>
+                      <TableCell className="text-center">90–99</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="font-medium text-health-high">Hypertension Stage 2</TableCell>
+                      <TableCell className="text-center">≥ 160</TableCell>
+                      <TableCell className="text-center">≥ 100</TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell className="font-medium text-destructive">Hypertensive Crisis</TableCell>
-                      <TableCell className="text-center">&gt; 180</TableCell>
-                      <TableCell className="text-center">&gt; 120</TableCell>
+                      <TableCell className="text-center">≥ 180</TableCell>
+                      <TableCell className="text-center">≥ 110</TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell className="font-medium text-health-low">Low (Hypotension)</TableCell>
@@ -102,8 +102,20 @@ const BPInfo = () => {
                     <span>&lt; 120/80 mmHg</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="w-24 font-medium">High:</span> 
-                    <span>≥ 130/80 mmHg</span>
+                    <span className="w-24 font-medium">Elevated:</span> 
+                    <span>120-139/80-89 mmHg</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="w-24 font-medium">Stage 1:</span> 
+                    <span>140-159/90-99 mmHg</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="w-24 font-medium">Stage 2:</span> 
+                    <span>≥ 160/100 mmHg</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="w-24 font-medium text-destructive">Crisis:</span> 
+                    <span>≥ 180/110 mmHg</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="w-24 font-medium">Low:</span> 

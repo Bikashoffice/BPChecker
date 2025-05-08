@@ -28,6 +28,17 @@ export function SharedReadings() {
   
   const getStatusBadge = (reading: BPReading) => {
     const { status, color } = getHealthStatus(reading.systolic, reading.diastolic);
+    
+    // Use specific colors for different status types
+    let badgeColor = color;
+    if (status === 'crisis') {
+      return (
+        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-destructive/20 text-destructive`}>
+          CRISIS
+        </span>
+      );
+    }
+    
     return (
       <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-${color}/20 text-${color}`}>
         {status.toUpperCase()}

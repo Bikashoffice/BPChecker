@@ -24,7 +24,7 @@ interface BPContextType {
   addReading: (reading: Omit<BPReading, 'id'>) => void;
   deleteReading: (id: string) => void;
   getHealthStatus: (systolic: number, diastolic: number) => {
-    status: 'normal' | 'elevated' | 'high' | 'low';
+    status: 'normal' | 'elevated' | 'high' | 'crisis' | 'low';
     color: string;
     message: string;
   };
@@ -115,6 +115,7 @@ export const BPProvider = ({ children }: { children: ReactNode }) => {
         schema: 'public', 
         table: 'shared_bp_readings' 
       }, payload => {
+        console.log('Received real-time update:', payload);
         const newReading = {
           id: payload.new.id,
           systolic: payload.new.systolic,
@@ -129,9 +130,12 @@ export const BPProvider = ({ children }: { children: ReactNode }) => {
         };
         setSharedReadings(prev => [newReading, ...prev]);
       })
-      .subscribe();
+      .subscribe((status) => {
+        console.log('Subscription status:', status);
+      });
       
     return () => {
+      console.log('Cleaning up channel subscription');
       supabase.removeChannel(channel);
     };
   }, []);
@@ -149,6 +153,18 @@ export const BPProvider = ({ children }: { children: ReactNode }) => {
     setReadings(prev => [newReading, ...prev]);
     
     try {
+      console.log('Saving reading to Supabase:', {
+        systolic: reading.systolic,
+        diastolic: reading.diastolic,
+        pulse: reading.pulse,
+        date: reading.date.toISOString(),
+        notes: reading.notes,
+        name: user?.email || reading.name || 'Anonymous',
+        age: reading.age,
+        gender: reading.gender,
+        status: status.status
+      });
+      
       // Save to Supabase
       const { error } = await supabase
         .from('shared_bp_readings')
@@ -184,7 +200,7 @@ export const BPProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const getHealthStatus = (systolic: number, diastolic: number): {
-    status: 'normal' | 'elevated' | 'high' | 'low';
+    status: 'normal' | 'elevated' | 'high' | 'crisis' | 'low';
     color: string;
     message: string;
   } => {
@@ -204,20 +220,44 @@ export const BPProvider = ({ children }: { children: ReactNode }) => {
         message: 'Your blood pressure is normal. Keep maintaining healthy habits like regular exercise, balanced diet, and proper sleep.'
       };
     }
-    // Elevated
-    else if ((systolic >= 120 && systolic <= 129) && diastolic < 80) {
+    // Elevated/Prehypertension
+    else if ((systolic >= 120 && systolic <= 139) || (diastolic >= 80 && diastolic <= 89)) {
       return {
         status: 'elevated',
         color: 'health-elevated',
         message: 'Your blood pressure is elevated. Focus on lifestyle changes: reduce sodium intake, exercise regularly, limit alcohol, and manage stress.'
       };
     }
-    // High
-    else {
+    // Hypertension Stage 1
+    else if ((systolic >= 140 && systolic <= 159) || (diastolic >= 90 && diastolic <= 99)) {
       return {
         status: 'high',
         color: 'health-high',
-        message: 'Your blood pressure is high. Reduce sodium intake, exercise regularly, limit alcohol, manage stress, and consult your doctor as medication may be needed.'
+        message: 'Your blood pressure is high (Stage 1 Hypertension). Reduce sodium intake, exercise regularly, limit alcohol, manage stress, and consult your doctor as medication may be needed.'
+      };
+    }
+    // Hypertension Stage 2
+    else if ((systolic >= 160 && systolic < 180) || (diastolic >= 100 && diastolic < 110)) {
+      return {
+        status: 'high',
+        color: 'health-high',
+        message: 'Your blood pressure is high (Stage 2 Hypertension). Urgent lifestyle changes are needed, and medication is likely necessary. Consult your doctor promptly.'
+      };
+    }
+    // Hypertensive Crisis
+    else if (systolic >= 180 || diastolic >= 110) {
+      return {
+        status: 'crisis',
+        color: 'destructive',
+        message: 'You may be experiencing a hypertensive crisis. Seek immediate medical attention if accompanied by symptoms such as chest pain, shortness of breath, back pain, numbness/weakness, vision changes, or difficulty speaking.'
+      };
+    }
+    // Default case (should not reach here)
+    else {
+      return {
+        status: 'elevated',
+        color: 'health-elevated',
+        message: 'Your blood pressure requires attention. Please consult with your healthcare provider for proper assessment.'
       };
     }
   };

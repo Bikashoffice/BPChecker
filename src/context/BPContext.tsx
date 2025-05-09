@@ -113,4 +113,5 @@ export const useBP = () => {
   return context;
 };
 
-export { BPReading };
+// Fix the re-export by using 'export type' instead of just 'export'
+export type { BPReading };

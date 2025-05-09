@@ -13,9 +13,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TableIcon, AlertCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 export function SharedReadings() {
   const { sharedReadings, getHealthStatus, isLoading } = useBP();
+  const [error, setError] = useState<string | null>(null);
   
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('en-US', {
@@ -85,6 +88,11 @@ export function SharedReadings() {
             <Skeleton className="h-10 w-full" />
             <Skeleton className="h-10 w-full" />
           </div>
+        ) : error ? (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
         ) : sharedReadings.length === 0 ? (
           <div className="text-center py-6">
             <p className="text-muted-foreground">No shared readings found</p>

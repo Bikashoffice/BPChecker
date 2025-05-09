@@ -20,6 +20,7 @@ export const useSupabaseRealtime = () => {
           
         if (error) {
           console.error('Supabase error:', error);
+          toast.error('Failed to load shared readings: ' + error.message);
           throw error;
         }
         

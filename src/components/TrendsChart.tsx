@@ -1,5 +1,5 @@
-
-import { useBP, BPReading } from "@/context/BPContext";
+import { useBP } from "@/context/BPContext";
+import { BPReading } from "@/types/bp-types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
 import { ChartBarIcon } from "lucide-react";

@@ -1,5 +1,6 @@
 
-import { useBP, BPReading } from "@/context/BPContext";
+import { useBP } from "@/context/BPContext";
+import { BPReading } from "@/types/bp-types";
 import {
   Table,
   TableBody,

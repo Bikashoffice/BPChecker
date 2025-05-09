@@ -1,5 +1,6 @@
 
-import { useBP, BPReading } from "@/context/BPContext";
+import { useBP } from "@/context/BPContext";
+import { BPReading } from "@/types/bp-types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowUpIcon, ArrowDownIcon, HeartPulseIcon } from "lucide-react";
 

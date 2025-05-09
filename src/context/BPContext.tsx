@@ -62,8 +62,14 @@ export const BPProvider = ({ children }: { children: ReactNode }) => {
   const [sharedReadings, setSharedReadings] = useState<BPReading[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Save readings to localStorage whenever they change
   useEffect(() => {
-    localStorage.setItem('bp-readings', JSON.stringify(readings));
+    try {
+      localStorage.setItem('bp-readings', JSON.stringify(readings));
+    } catch (error) {
+      console.error('Error saving to localStorage:', error);
+      toast.error('Failed to save your readings locally');
+    }
   }, [readings]);
   
   // Fetch shared readings from Supabase
@@ -71,7 +77,7 @@ export const BPProvider = ({ children }: { children: ReactNode }) => {
     async function fetchSharedReadings() {
       setIsLoading(true);
       try {
-        // Even if user is not logged in, we can still fetch public shared readings
+        console.log('Fetching shared readings...');
         const { data, error } = await supabase
           .from('shared_bp_readings')
           .select('*')
@@ -83,6 +89,7 @@ export const BPProvider = ({ children }: { children: ReactNode }) => {
         }
         
         if (data) {
+          console.log('Received shared readings:', data.length);
           const formattedData = data.map(item => ({
             id: item.id,
             systolic: item.systolic,
@@ -165,32 +172,47 @@ export const BPProvider = ({ children }: { children: ReactNode }) => {
         status: status.status
       });
       
-      // Save to Supabase
-      const { error } = await supabase
-        .from('shared_bp_readings')
-        .insert({
-          systolic: reading.systolic,
-          diastolic: reading.diastolic,
-          pulse: reading.pulse,
-          date: reading.date.toISOString(),
-          notes: reading.notes,
-          name: user?.email || reading.name || 'Anonymous',
-          age: reading.age,
-          gender: reading.gender,
-          status: status.status
-        });
-        
-      if (error) {
-        console.error('Supabase insertion error:', error);
-        throw error;
-      }
+      // Save to Supabase with retry logic
+      const saveToSupabase = async (retries = 3) => {
+        try {
+          const { error } = await supabase
+            .from('shared_bp_readings')
+            .insert({
+              systolic: reading.systolic,
+              diastolic: reading.diastolic,
+              pulse: reading.pulse,
+              date: reading.date.toISOString(),
+              notes: reading.notes,
+              name: user?.email || reading.name || 'Anonymous',
+              age: reading.age,
+              gender: reading.gender,
+              status: status.status
+            });
+            
+          if (error) {
+            console.error('Supabase insertion error:', error);
+            throw error;
+          }
+          
+          console.log('Reading saved to Supabase successfully');
+          toast(`Reading added: ${status.status.toUpperCase()}`, {
+            description: status.message,
+          });
+        } catch (error) {
+          console.error(`Error saving reading to Supabase (attempt ${4 - retries}/3):`, error);
+          if (retries > 0) {
+            console.log(`Retrying in 1 second... (${retries} attempts left)`);
+            setTimeout(() => saveToSupabase(retries - 1), 1000);
+          } else {
+            toast.error('Failed to share reading online. Your data is saved locally.');
+          }
+        }
+      };
       
-      toast(`Reading added: ${status.status.toUpperCase()}`, {
-        description: status.message,
-      });
+      await saveToSupabase();
     } catch (error) {
-      console.error('Error saving reading to Supabase:', error);
-      toast.error('Failed to share reading online');
+      console.error('Error in addReading function:', error);
+      toast.error('Failed to save reading. Please try again.');
     }
   };
 

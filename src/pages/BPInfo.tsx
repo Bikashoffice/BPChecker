@@ -60,13 +60,13 @@ const BPInfo = () => {
                   <TableBody>
                     <TableRow>
                       <TableCell className="font-medium text-health-normal">Normal</TableCell>
-                      <TableCell className="text-center">&lt; 120</TableCell>
-                      <TableCell className="text-center">and &lt; 80</TableCell>
+                      <TableCell className="text-center">≤ 120</TableCell>
+                      <TableCell className="text-center">and ≤ 80</TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell className="font-medium text-health-elevated">Elevated</TableCell>
-                      <TableCell className="text-center">120-129</TableCell>
-                      <TableCell className="text-center">and &lt; 80</TableCell>
+                      <TableCell className="text-center">121-129</TableCell>
+                      <TableCell className="text-center">and < 80</TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell className="font-medium text-health-high">Hypertension Stage 1</TableCell>
@@ -85,8 +85,8 @@ const BPInfo = () => {
                     </TableRow>
                     <TableRow>
                       <TableCell className="font-medium text-health-low">Low (Hypotension)</TableCell>
-                      <TableCell className="text-center">&lt; 90</TableCell>
-                      <TableCell className="text-center">or &lt; 60</TableCell>
+                      <TableCell className="text-center">< 90</TableCell>
+                      <TableCell className="text-center">or < 60</TableCell>
                     </TableRow>
                   </TableBody>
                 </Table>
@@ -99,11 +99,11 @@ const BPInfo = () => {
                 <ul className="space-y-2">
                   <li className="flex items-center gap-2">
                     <span className="w-24 font-medium">Normal:</span> 
-                    <span>&lt; 120/80 mmHg</span>
+                    <span>≤ 120/80 mmHg</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="w-24 font-medium">Elevated:</span> 
-                    <span>120-129/&lt;80 mmHg</span>
+                    <span>121-129/< 80 mmHg</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="w-24 font-medium">Stage 1:</span> 
@@ -119,7 +119,7 @@ const BPInfo = () => {
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="w-24 font-medium">Low:</span> 
-                    <span>&lt; 90/&lt; 60 mmHg</span>
+                    <span>< 90/< 60 mmHg</span>
                   </li>
                 </ul>
               </div>

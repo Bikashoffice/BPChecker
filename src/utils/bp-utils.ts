@@ -30,7 +30,7 @@ export const getHealthStatus = (systolic: number, diastolic: number): BPStatusRe
     };
   }
   // Elevated
-  else if (systolic >= 120 && systolic <= 129 && diastolic < 80) {
+  else if (systolic > 120 && systolic < 130 && diastolic < 80) {
     return {
       status: 'elevated',
       color: 'health-elevated',
@@ -38,7 +38,7 @@ export const getHealthStatus = (systolic: number, diastolic: number): BPStatusRe
     };
   }
   // Normal
-  else if (systolic < 120 && diastolic < 80) {
+  else if (systolic <= 120 && diastolic <= 80) {
     return {
       status: 'normal',
       color: 'health-normal',

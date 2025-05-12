@@ -80,8 +80,8 @@ const BPInfo = () => {
                     </TableRow>
                     <TableRow>
                       <TableCell className="font-medium text-destructive">Hypertensive Crisis</TableCell>
-                      <TableCell className="text-center">&gt; 180</TableCell>
-                      <TableCell className="text-center">and/or &gt; 120</TableCell>
+                      <TableCell className="text-center">≥ 180</TableCell>
+                      <TableCell className="text-center">or ≥ 120</TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell className="font-medium text-health-low">Low (Hypotension)</TableCell>
@@ -115,7 +115,7 @@ const BPInfo = () => {
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="w-24 font-medium text-destructive">Crisis:</span> 
-                    <span>&gt; 180/&gt; 120 mmHg</span>
+                    <span>≥ 180/≥ 120 mmHg</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="w-24 font-medium">Low:</span> 

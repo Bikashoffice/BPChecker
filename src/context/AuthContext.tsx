@@ -39,6 +39,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Set up auth state listener first
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, currentSession) => {
+        console.log('Auth state changed:', event);
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
         
@@ -50,10 +51,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 .from('profiles')
                 .select('role')
                 .eq('id', currentSession.user.id)
-                .single();
+                .maybeSingle();
               
-              if (error) throw error;
-              setUserRole(data.role);
+              if (error) {
+                console.error('Error fetching user role:', error);
+                setUserRole('user'); // Default to user role
+                return;
+              }
+              setUserRole(data?.role || 'user');
             } catch (error) {
               console.error('Error fetching user role:', error);
               setUserRole('user'); // Default to user role
@@ -75,14 +80,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           setSession(currentSession);
           setUser(currentSession.user);
           
-          const { data, error } = await supabase
-            .from('profiles')
-            .select('role')
-            .eq('id', currentSession.user.id)
-            .single();
-          
-          if (error) throw error;
-          setUserRole(data.role);
+          try {
+            const { data, error } = await supabase
+              .from('profiles')
+              .select('role')
+              .eq('id', currentSession.user.id)
+              .maybeSingle();
+            
+            if (error) {
+              console.error('Error fetching user role:', error);
+              setUserRole('user'); // Default to user role
+              return;
+            }
+            setUserRole(data?.role || 'user');
+          } catch (error) {
+            console.error('Error fetching user role:', error);
+            setUserRole('user'); // Default to user role
+          }
         }
       } catch (error) {
         console.error('Error initializing auth:', error);

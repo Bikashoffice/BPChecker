@@ -10,15 +10,21 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TableIcon, AlertCircle } from "lucide-react";
+import { TableIcon, AlertCircle, RefreshCw } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useSupabaseRealtime } from "@/hooks/useSupabaseRealtime";
+import { toast } from "sonner";
 
 export function SharedReadings() {
-  const { sharedReadings, getHealthStatus, isLoading } = useBP();
-  const [error, setError] = useState<string | null>(null);
+  const { getHealthStatus } = useBP();
+  const { sharedReadings, isLoading, error, refetchReadings } = useSupabaseRealtime();
+  
+  const handleRefresh = async () => {
+    toast.info("Refreshing shared readings...");
+    await refetchReadings();
+  };
   
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('en-US', {
@@ -34,7 +40,6 @@ export function SharedReadings() {
     const { status, color } = getHealthStatus(reading.systolic, reading.diastolic);
     
     // Use specific colors for different status types
-    let badgeColor = color;
     if (status === 'crisis') {
       return (
         <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-destructive/20 text-destructive`}>
@@ -74,11 +79,21 @@ export function SharedReadings() {
   
   return (
     <Card className="bp-card">
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="flex items-center gap-2">
           <TableIcon className="h-5 w-5" />
           Shared Community Readings
         </CardTitle>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={handleRefresh}
+          disabled={isLoading}
+          className="h-8 gap-1"
+        >
+          <RefreshCw className={`h-3 w-3 ${isLoading ? 'animate-spin' : ''}`} />
+          Refresh
+        </Button>
       </CardHeader>
       <CardContent>
         {isLoading ? (
@@ -89,7 +104,7 @@ export function SharedReadings() {
             <Skeleton className="h-10 w-full" />
           </div>
         ) : error ? (
-          <Alert variant="destructive">
+          <Alert variant="destructive" className="mb-4">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>{error}</AlertDescription>
           </Alert>

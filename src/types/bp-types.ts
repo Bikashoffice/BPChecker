@@ -32,4 +32,5 @@ export interface BPContextType {
   getHealthStatus: (systolic: number, diastolic: number) => BPStatusResult;
   getPulseStatus: (pulse: number) => PulseStatusResult;
   isLoading: boolean;
+  error?: string | null;
 }

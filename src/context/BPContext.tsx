@@ -14,7 +14,7 @@ const BPContext = createContext<BPContextType | undefined>(undefined);
 export const BPProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useAuth();
   const { readings, setReadings } = useLocalStorage();
-  const { sharedReadings, isLoading } = useSupabaseRealtime();
+  const { sharedReadings, isLoading, error } = useSupabaseRealtime();
 
   const addReading = async (reading: Omit<BPReading, 'id'>) => {
     const status = getHealthStatus(reading.systolic, reading.diastolic);
@@ -98,7 +98,8 @@ export const BPProvider = ({ children }: { children: ReactNode }) => {
       deleteReading,
       getHealthStatus,
       getPulseStatus,
-      isLoading
+      isLoading,
+      error
     }}>
       {children}
     </BPContext.Provider>

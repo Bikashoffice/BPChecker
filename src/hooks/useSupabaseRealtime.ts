@@ -7,10 +7,12 @@ import { toast } from "sonner";
 export const useSupabaseRealtime = () => {
   const [sharedReadings, setSharedReadings] = useState<BPReading[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchSharedReadings() {
       setIsLoading(true);
+      setError(null); // Reset error state
       try {
         console.log('Fetching shared readings...');
         const { data, error } = await supabase
@@ -21,7 +23,8 @@ export const useSupabaseRealtime = () => {
         if (error) {
           console.error('Supabase error:', error);
           toast.error('Failed to load shared readings: ' + error.message);
-          throw error;
+          setError(error.message);
+          return;
         }
         
         if (data) {
@@ -41,8 +44,10 @@ export const useSupabaseRealtime = () => {
           setSharedReadings(formattedData);
         }
       } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         console.error('Error fetching shared readings:', error);
-        toast.error('Failed to load shared readings');
+        toast.error('Failed to load shared readings: ' + errorMessage);
+        setError(errorMessage);
       } finally {
         setIsLoading(false);
       }
@@ -83,5 +88,46 @@ export const useSupabaseRealtime = () => {
     };
   }, []);
 
-  return { sharedReadings, isLoading };
+  const refetchReadings = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const { data, error } = await supabase
+        .from('shared_bp_readings')
+        .select('*')
+        .order('shared_at', { ascending: false });
+        
+      if (error) {
+        console.error('Supabase error on refetch:', error);
+        toast.error('Failed to reload readings: ' + error.message);
+        setError(error.message);
+        return;
+      }
+      
+      if (data) {
+        const formattedData = data.map(item => ({
+          id: item.id,
+          systolic: item.systolic,
+          diastolic: item.diastolic,
+          pulse: item.pulse,
+          date: new Date(item.date),
+          notes: item.notes || '',
+          name: item.name || 'Anonymous',
+          age: item.age,
+          gender: item.gender,
+          status: item.status
+        }));
+        setSharedReadings(formattedData);
+        toast.success(`Loaded ${formattedData.length} readings`);
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.error('Error refetching shared readings:', error);
+      setError(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return { sharedReadings, isLoading, error, refetchReadings };
 };

@@ -66,7 +66,7 @@ const BPInfo = () => {
                     <TableRow>
                       <TableCell className="font-medium text-health-elevated">Elevated</TableCell>
                       <TableCell className="text-center">121-129</TableCell>
-                      <TableCell className="text-center">and < 80</TableCell>
+                      <TableCell className="text-center">and &lt; 80</TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell className="font-medium text-health-high">Hypertension Stage 1</TableCell>
@@ -85,8 +85,8 @@ const BPInfo = () => {
                     </TableRow>
                     <TableRow>
                       <TableCell className="font-medium text-health-low">Low (Hypotension)</TableCell>
-                      <TableCell className="text-center">< 90</TableCell>
-                      <TableCell className="text-center">or < 60</TableCell>
+                      <TableCell className="text-center">&lt; 90</TableCell>
+                      <TableCell className="text-center">or &lt; 60</TableCell>
                     </TableRow>
                   </TableBody>
                 </Table>
@@ -103,7 +103,7 @@ const BPInfo = () => {
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="w-24 font-medium">Elevated:</span> 
-                    <span>121-129/< 80 mmHg</span>
+                    <span>121-129/&lt; 80 mmHg</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="w-24 font-medium">Stage 1:</span> 
@@ -119,7 +119,7 @@ const BPInfo = () => {
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="w-24 font-medium">Low:</span> 
-                    <span>< 90/< 60 mmHg</span>
+                    <span>&lt; 90/&lt; 60 mmHg</span>
                   </li>
                 </ul>
               </div>
